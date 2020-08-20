@@ -19,6 +19,16 @@ function Movie({ addToSavedList }) {
     addToSavedList(movie);
   };
 
+  const handleDelete = e => {
+    e.preventDefault()
+    axios
+      .delete(`http://localhost:5000/api/movies/${params.id}`)
+      .then((res) => {
+        console.log(res)
+        history.push('/')
+      })
+  }
+
   useEffect(() => {
     fetchMovie(params.id);
   }, [params.id]);
@@ -27,15 +37,6 @@ function Movie({ addToSavedList }) {
     return <div>Loading movie information...</div>;
   }
 
-  const handleDelete = e => {
-    e.preventDefault()
-    axios
-    .delete(`http://localhost:5000/api/movies/${movie.id}`)
-    .then((res) => {
-      console.log(res)
-      history.push('/')
-    })
-  }
 
   return (
     <div className="save-wrapper">
@@ -45,7 +46,7 @@ function Movie({ addToSavedList }) {
         Save
       </div>
       <button onClick={handleDelete}>Delete</button>
-      <button onClick={() => history.push(`/update-movie/${movie.id}`)}>Update</button>
+      <button onClick={() => history.push(`/update-movie/${params.id}`)}>Update</button>
     </div>
   );
 }

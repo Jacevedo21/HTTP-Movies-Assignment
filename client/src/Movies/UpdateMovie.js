@@ -1,84 +1,89 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useHistory } from 'react-router-dom'
-import axios from 'axios'
+import React, { useState } from 'react'
+import { useParams, useHistory } from "react-router-dom";
+import axios from "axios";
 
-
-const intialForm = {
-    id: new Date(),
-    title: '',
-    director: '',
+const intialform = {
+    title: "",
+    director: "",
     metascore: 0,
-    stars: [],
+    stars: ''
 }
 
-const UpdateMovie = () => {
-    const { id } = useParams();
-    const history = useHistory()
-    const [form, setForm] = useState(intialForm)
+const UpdateMovie = (props) => {
+    const { id, title } = useParams();
+    const history = useHistory();
 
-    const handleSubmit = (e) => {
-        console.log('is it changing', form.stars)
-        e.preventDefault();
-        axios
-        .put(`http://localhost:5000/api/movies/${id}`, form)
-        .then((res) => {
-            console.log(res)
-            setForm(res)
-            console.log('is it changing', form.stars)
-            history.push("/")
+    const [form, setForm] = useState(intialform)
 
-        })
-        .catch((err) => console.log(err.message))
+
+    const handleChange = e => {
+        const { name, value } = e.target
+        if (name === 'stars') {
+            setForm({ ...form, [name]: [...name, value] })
+        }
+        setForm({ ...form, [name]: value })
     }
 
-    
-    const handleChange = e => {
-        // if(Array.isArray(e.target.name)) {
-        //     setForm({...form, [e.target.name]: [...e.target.name, e.target.value]})
-        // } else {
-        //     setForm({...form, [e.target.name]: e.target.value})
-        // }
-        setForm({...form, [e.target.name]: e.target.value })
+    const handleSubmit = e => {
+        e.preventDefault()
+        const updated = {
+            id: id,
+            title: form.title,
+            director: form.director,
+            metascore: form.metascore,
+            stars: [form.stars]
+        }
+
+        axios.put(`http://localhost:5000/api/movies/${id}`, updated)
+            .then((res) => {
+                // console.log(res)
+                setForm(intialform)
+                history.push(`/`)
+            })
+            .catch((err) => console.log(err))
     }
 
     return (
         <div>
-            <h2>Update Movie</h2>
+            <h2>Edit {title} </h2>
             <form onSubmit={handleSubmit}>
-                <input 
-                type='text'
-                name='title'
-                onChange={handleChange}
-                placeholder='Title'
-                value={form.title}
+                <label>Title:
+            <input
+                        type='text'
+                        name='title'
+                        onChange={handleChange}
+                        placeholder='Title'
+                        value={form.title}
+                    />
+                </label>
+
+                <input
+                    type='text'
+                    name='director'
+                    onChange={handleChange}
+                    placeholder='Director'
+                    value={form.director}
                 />
 
-                <input 
-                type='text'
-                name='director'
-                onChange={handleChange}
-                placeholder='Director'
-                value={form.director}
+                <input
+                    type='number'
+                    name='metascore'
+                    onChange={handleChange}
+                    placeholder='Metascore'
+                    value={form.metascore}
                 />
 
-                <input 
-                type='number'
-                name='metascore'
-                onChange={handleChange}
-                placeholder='Metascore'
-                value={form.metascore}
-                />
-
-                <input 
-                type='text'
-                name='stars'
-                onChange={handleChange}
-                placeholder='Actors'
-                value={form.stars}
+                <input
+                    type='text'
+                    name='stars'
+                    onChange={handleChange}
+                    placeholder='Actors'
+                    value={form.stars}
                 />
                 <button>Submit</button>
             </form>
         </div>
     )
 }
-export default UpdateMovie
+
+export default UpdateMovie 
